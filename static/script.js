@@ -13,20 +13,34 @@ let predictionInProgress = false;
 const PREDICTION_THROTTLE = 2000; // Wait 5 seconds between predictions
 const DRAW_SETTLE_TIME = 2000; // Wait 3 seconds after user stops drawing
 
+// Helper function to get accurate mouse coordinates
+function getMouseCoordinates(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
 // --- Drawing Setup ---
 canvas.addEventListener("mousedown", e => {
   if (!gameActive) return;
+  const coords = getMouseCoordinates(e);
   drawing = true;
   hasDrawnAnything = true;
   lastDrawTime = Date.now();
   ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
+  ctx.moveTo(coords.x, coords.y);
 });
 
 canvas.addEventListener("mousemove", e => {
   if (drawing && gameActive) {
     lastDrawTime = Date.now(); // Update draw time on every move
-    ctx.lineTo(e.offsetX, e.offsetY);
+    const coords = getMouseCoordinates(e);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
   }
 });
@@ -38,19 +52,29 @@ canvas.addEventListener("mouseup", () => {
   }
 });
 
+// Helper function to get accurate touch coordinates
+function getTouchCoordinates(touch) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  
+  return {
+    x: (touch.clientX - rect.left) * scaleX,
+    y: (touch.clientY - rect.top) * scaleY
+  };
+}
+
 // Add touch support for mobile
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   if (!gameActive) return;
   const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
+  const coords = getTouchCoordinates(touch);
   drawing = true;
   hasDrawnAnything = true;
   lastDrawTime = Date.now();
   ctx.beginPath();
-  ctx.moveTo(x, y);
+  ctx.moveTo(coords.x, coords.y);
 });
 
 canvas.addEventListener("touchmove", e => {
@@ -58,10 +82,8 @@ canvas.addEventListener("touchmove", e => {
   if (drawing && gameActive) {
     lastDrawTime = Date.now();
     const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-    ctx.lineTo(x, y);
+    const coords = getTouchCoordinates(touch);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
   }
 });
