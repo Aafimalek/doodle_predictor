@@ -193,7 +193,6 @@ Thumbs.db
 
 # Project specific
 # Environment variables (contains API keys)
-backend/.env
 .env.local
 .env.development
 .env.test

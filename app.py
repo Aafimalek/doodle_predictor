@@ -11,7 +11,7 @@ import google.generativeai as genai
 
 
 load_dotenv()
-app = Flask(__name__, static_folder="../static", template_folder="../templates")
+app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # Predefined list of drawing-friendly words - Simple 2D objects only
 DRAWING_WORDS = [
